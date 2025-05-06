@@ -1,6 +1,8 @@
 using API.Data;
+using API.Errors;
 using API.Extensions;
 using API.Interfaces;
+using API.Middleware;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -25,8 +27,12 @@ builder.Services.AddCors(options =>
                        .AllowAnyMethod();
             });
     });
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExecptionHandler>();
 
 var app = builder.Build();
+//app.UseMiddleware<ExceptionMiddleware>();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -35,6 +41,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAngularApp");
